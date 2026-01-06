@@ -9,11 +9,13 @@ Designed to be lightweight, incredibly fast, and aesthetically pleasing with a "
 ## ✨ Features
 
 * **⚡ Blazing Fast:** Powered by Rust and `portable-pty` for the backend, with `xterm.js` WebGL rendering on the frontend.
-* **🎨 Modern UI:** Sleek, borderless design with a custom title bar.
+* **🎨 Modern UI:** Sleek, borderless design with a custom title bar and glassmorphism accents.
 * **🔀 Multi-Tab & Split Support:** Manage multiple sessions effortlessly.
-* **📁 Profile Manager:** Built-in sidebar to manage SSH connections, WSL distros, and local shells.
+* **📁 Smart Profile Selector:** Dropdown to easily switch between **Bash**, **WSL**, **PowerShell**, or **CMD** based on your OS.
+* **⚙️ Settings Tab:** Dedicated configuration page (work in progress) to manage app preferences.
+* **🚪 Auto-Close:** Tabs automatically close when the shell process exits. Main window closes on last tab exit.
 * **🧩 Nerd Font Support:** Bundled JetBrains Mono Nerd Font for perfect icon rendering (Starship/Powerlevel10k ready).
-* **🛠️ Cross-Platform:** Runs natively on Linux, Windows, and macOS.
+* **🛠️ Cross-Platform:** Runs natively on Linux, Windows, and macOS with OS-specific defaults.
 
 ---
 
@@ -60,15 +62,14 @@ Ensure you have the following installed:
 
 ## 📖 Usage Guide
 
-### 1. SSH & Profiles
-Click the **Menu Icon** (Hamburger) in the top-left to open the **Sidebar**.
-* **Local:** Spawns your default shell (Bash/Zsh/PowerShell).
-* **WSL:** Automatically detects and launches WSL (Windows only).
-* **SSH:** Click "New Connection" to add a saved SSH profile (e.g., `root@192.168.1.5`).
+### 1. Profiles & New Tabs
+* Click the **`+`** button to open a default terminal tab.
+* Click the **Chevron (⌄)** next to it to select a specific profile (e.g., WSL, Bash).
+* The app automatically detects your OS and offers relevant shells.
 
-### 2. Tabs
-* Click the **`+`** button in the tab bar to open a new session.
-* Close tabs using the **`x`** icon on the tab itself.
+### 2. Settings
+* Click the **Gear Icon** in the title bar to open the **Settings Tab**.
+* Here you can configure startup behavior and appearance (more settings coming soon).
 
 ### 3. Font Issues?
 If you see "boxes" instead of icons in your prompt:
@@ -80,19 +81,9 @@ If you see "boxes" instead of icons in your prompt:
 
 ## 🔧 Configuration
 
-### Customizing the Shell
-To change the default shell (e.g., from Bash to Zsh), edit `src-tauri/src/lib.rs`:
-
-```rust
-// In lib.rs
-let cmd = CommandBuilder::new("zsh"); // Change "bash" to "zsh" or "fish"
-
-```
-
 ### Changing Colors
 
-The theme is hardcoded for seamless integration in `src/components/Terminal.tsx`.
-To change the background color, you must update it in **two places** to ensure the seamless look:
+The theme is designed for seamless integration. To change the background color, you must update it in **two places**:
 
 1. `src/App.css` -> `.app-container { background-color: #YOUR_COLOR; }`
 2. `src/components/Terminal.tsx` -> `const theme = { background: '#YOUR_COLOR', ... }`

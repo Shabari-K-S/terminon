@@ -12,8 +12,8 @@ const theme = {
   selectionBackground: 'rgba(88, 91, 112, 0.3)',
 };
 
-// Add 'visible' prop
-export const TerminalPane = ({ id, visible }: { id: string, visible: boolean }) => {
+// Add 'visible' prop and optional command/args
+export const TerminalPane = ({ id, visible, command, args, onExit }: { id: string, visible: boolean, command?: string, args?: string[], onExit?: () => void }) => {
   const terminalRef = useRef<HTMLDivElement>(null);
   const fitAddonRef = useRef<FitAddon | null>(null); // Store addon ref to call fit() later
 
@@ -29,7 +29,7 @@ export const TerminalPane = ({ id, visible }: { id: string, visible: boolean }) 
       allowProposedApi: true,
       allowTransparency: false,
     });
-    
+
     const fitAddon = new FitAddon();
     term.loadAddon(fitAddon);
     fitAddonRef.current = fitAddon; // Save it
@@ -44,10 +44,14 @@ export const TerminalPane = ({ id, visible }: { id: string, visible: boolean }) 
     window.addEventListener('resize', handleResize);
 
     // Backend Logic
-    invoke('create_pty_session', { id });
+    invoke('create_pty_session', { id, command, args });
 
-    const unlistenPromise = listen(`pty-data-${id}`, (event: any) => {
+    const unlistenData = listen(`pty-data-${id}`, (event: any) => {
       term.write(event.payload);
+    });
+
+    const unlistenExit = listen(`pty-exit-${id}`, () => {
+      if (onExit) onExit();
     });
 
     const onDataDisposable = term.onData((data) => {
@@ -58,7 +62,8 @@ export const TerminalPane = ({ id, visible }: { id: string, visible: boolean }) 
       window.removeEventListener('resize', handleResize);
       onDataDisposable.dispose();
       term.dispose();
-      unlistenPromise.then(f => f());
+      unlistenData.then(f => f());
+      unlistenExit.then(f => f());
     };
   }, [id]);
 
@@ -73,9 +78,9 @@ export const TerminalPane = ({ id, visible }: { id: string, visible: boolean }) 
   }, [visible]);
 
   return (
-    <div 
-      ref={terminalRef} 
-      style={{ width: '100%', height: '100%', backgroundColor: '#1e1e2e' }} 
+    <div
+      ref={terminalRef}
+      style={{ width: '100%', height: '100%', backgroundColor: '#1e1e2e' }}
     />
   );
 };
