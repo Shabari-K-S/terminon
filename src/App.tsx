@@ -5,7 +5,9 @@ import { ChevronDown, Settings, Minus, Square, X, Plus, TerminalSquare, Settings
 import { getCurrentWindow } from '@tauri-apps/api/window';
 import "./App.css";
 import { DEFAULT_PROFILES } from './config/profiles';
-import { Profile } from './types';
+import { Profile, SSHProfile } from './types';
+import { loadSSHProfiles } from './lib/store';
+import { listen } from '@tauri-apps/api/event';
 
 const generateId = () => `term-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -22,7 +24,22 @@ function App() {
   const [tabs, setTabs] = useState<Tab[]>([{ id: 'init-1', type: 'terminal', title: 'Terminal' }]);
   const [activeId, setActiveId] = useState('init-1');
   const [showProfileMenu, setShowProfileMenu] = useState(false);
+  const [sshProfiles, setSshProfiles] = useState<SSHProfile[]>([]);
   const profileMenuRef = useRef<HTMLDivElement>(null);
+
+
+  useEffect(() => {
+    loadSSHProfiles().then(setSshProfiles);
+
+    // Listen for updates from other components
+    const unlisten = listen('profiles-changed', () => {
+      loadSSHProfiles().then(setSshProfiles);
+    });
+
+    return () => {
+      unlisten.then(f => f());
+    };
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -46,12 +63,27 @@ function App() {
       };
     } else {
       // Default to terminal
+      let command = options?.profile?.type === 'local' ? options.profile.command : undefined;
+      let args = options?.profile?.type === 'local' ? options.profile.args : undefined;
+
+      if (options?.profile?.type === 'ssh') {
+        command = 'ssh';
+        args = [];
+        if (options.profile.port !== 22) {
+          args.push('-p', options.profile.port.toString());
+        }
+        if (options.profile.identityFile) {
+          args.push('-i', options.profile.identityFile);
+        }
+        args.push(`${options.profile.username}@${options.profile.host}`);
+      }
+
       newTab = {
         id: newId,
         type: 'terminal',
         title: options?.profile ? options.profile.name : 'Terminal',
-        command: options?.profile?.command,
-        args: options?.profile?.args
+        command,
+        args
       };
     }
 
@@ -77,6 +109,8 @@ function App() {
       if (id === activeId) setActiveId(newTabs[newTabs.length - 1].id);
     }
   };
+
+  const allProfiles: Profile[] = [...DEFAULT_PROFILES, ...sshProfiles];
 
   return (
     <div className="app-container">
@@ -114,11 +148,19 @@ function App() {
             {showProfileMenu && (
               <div className="profile-menu" ref={profileMenuRef}>
                 <div className="profile-menu-header">Profiles</div>
-                {DEFAULT_PROFILES.map((profile) => (
+                {allProfiles.map((profile) => (
                   <div key={profile.id} className="profile-item" onClick={() => addTab({ profile })}>
                     <span>{profile.name}</span>
                   </div>
                 ))}
+                <div className="profile-menu-divider" />
+                <div className="profile-item add-profile" onClick={() => {
+                  addTab({ type: 'settings' });
+                  setShowProfileMenu(false);
+                }}>
+                  <Plus size={14} />
+                  <span>Add Profile</span>
+                </div>
               </div>
             )}
           </div>

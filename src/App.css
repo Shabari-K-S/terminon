@@ -155,6 +155,22 @@
   background: rgba(255, 255, 255, 0.1);
 }
 
+.profile-menu-divider {
+  height: 1px;
+  background: rgba(255, 255, 255, 0.1);
+  margin: 4px 0;
+}
+
+.profile-item.add-profile {
+  color: #89b4fa;
+  /* Catppuccin Blue */
+  font-weight: 500;
+}
+
+.profile-item.add-profile:hover {
+  background: rgba(137, 180, 250, 0.1);
+}
+
 /* Settings Button */
 .control-btn.settings {
   margin-right: 8px;

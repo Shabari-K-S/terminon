@@ -12,7 +12,8 @@ Designed to be lightweight, incredibly fast, and aesthetically pleasing with a "
 * **🎨 Modern UI:** Sleek, borderless design with a custom title bar and glassmorphism accents.
 * **🔀 Multi-Tab & Split Support:** Manage multiple sessions effortlessly.
 * **📁 Smart Profile Selector:** Dropdown to easily switch between **Bash**, **WSL**, **PowerShell**, or **CMD** based on your OS.
-* **⚙️ Settings Tab:** Dedicated configuration page (work in progress) to manage app preferences.
+* **🌐 SSH Profile Manager:** Create, save, and launch SSH connections directly from the UI.
+* **⚙️ Settings Tab:** Dedicated configuration page to manage profiles and app preferences.
 * **🚪 Auto-Close:** Tabs automatically close when the shell process exits. Main window closes on last tab exit.
 * **🧩 Nerd Font Support:** Bundled JetBrains Mono Nerd Font for perfect icon rendering (Starship/Powerlevel10k ready).
 * **🛠️ Cross-Platform:** Runs natively on Linux, Windows, and macOS with OS-specific defaults.
