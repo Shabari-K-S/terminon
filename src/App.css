@@ -18,17 +18,14 @@
   flex-direction: column;
   height: 100vh;
   width: 100vw;
-  background-color: #1e1e2e;
-  /* Catppuccin Base */
-  color: #cdd6f4;
-  /* Catppuccin Text */
+  background-color: var(--background);
+  color: var(--foreground);
   font-family: 'JetBrains Mono', 'Fira Code', monospace;
   overflow: hidden;
 
   /* ROUNDED CORNERS CONFIG */
   border-radius: 12px;
-  border: 1px solid #313244;
-  /* Subtle Border */
+  border: 1px solid color-mix(in srgb, var(--background), var(--foreground) 20%);
 }
 
 /* --- TITLE BAR --- */
@@ -38,8 +35,8 @@
   /* Align tabs to bottom */
   height: 44px;
   /* COMFORT SIZE */
-  background-color: #1e1e2e;
-  border-bottom: 1px solid #313244;
+  background-color: var(--background);
+  border-bottom: 1px solid color-mix(in srgb, var(--background), var(--foreground) 20%);
   width: 100%;
   padding-top: 4px;
   /* Space at top */
@@ -52,6 +49,10 @@
   padding-left: 12px;
   height: 100%;
   z-index: 20;
+  /* CRITICAL: Allow this container to shrink below its content's intrinsic size */
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* Additions for Profiles & Settings */
@@ -62,11 +63,11 @@
   align-items: center;
   margin-left: 4px;
   height: 38px;
-  background: rgba(255, 255, 255, 0.05);
-  /* Slight background for the group */
+  background: color-mix(in srgb, var(--background), var(--foreground) 5%);
   border-radius: 4px;
   position: relative;
-  /* Anchor for dropdown */
+  /* Prevent new tab button from shrinking too much */
+  flex-shrink: 0;
 }
 
 /* Left part (+) */
@@ -85,7 +86,7 @@
 }
 
 .new-tab-btn.left:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--background), var(--foreground) 10%);
 }
 
 /* Right part (Chevron) */
@@ -97,17 +98,15 @@
   margin-top: 10%;
   height: 80%;
   cursor: pointer;
-  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 1px solid color-mix(in srgb, var(--background), var(--foreground) 10%);
   border-top-right-radius: 4px;
   border-bottom-right-radius: 4px;
   transition: background 0.2s;
 }
 
 .new-tab-btn.right:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--background), var(--foreground) 10%);
 }
-
-/* Old .new-tab-btn fallback/override cleanup if needed */
 
 /* Profile Dropdown Menu */
 .profile-menu {
@@ -117,9 +116,9 @@
   left: 0;
   margin-top: 6px;
   width: 150px;
-  background: rgba(30, 30, 46, 0.95);
+  background: var(--background);
   /* Deep dark background */
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: 1px solid color-mix(in srgb, var(--background), var(--foreground) 10%);
   border-radius: 8px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(10px);
@@ -132,7 +131,7 @@
 .profile-menu-header {
   padding: 6px 10px;
   font-size: 11px;
-  color: #6c7086;
+  color: color-mix(in srgb, var(--foreground), transparent 40%);
   /* Subtext color */
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -144,7 +143,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: #cdd6f4;
+  color: var(--foreground);
   font-size: 13px;
   border-radius: 4px;
   cursor: pointer;
@@ -152,35 +151,34 @@
 }
 
 .profile-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--background), var(--foreground) 10%);
 }
 
 .profile-menu-divider {
   height: 1px;
-  background: rgba(255, 255, 255, 0.1);
+  background: color-mix(in srgb, var(--background), var(--foreground) 10%);
   margin: 4px 0;
 }
 
 .profile-item.add-profile {
-  color: #89b4fa;
-  /* Catppuccin Blue */
+  color: var(--color-blue);
   font-weight: 500;
 }
 
 .profile-item.add-profile:hover {
-  background: rgba(137, 180, 250, 0.1);
+  background: color-mix(in srgb, var(--color-blue), transparent 90%);
 }
 
 /* Settings Button */
 .control-btn.settings {
   margin-right: 8px;
   /* Spacing from minimize */
-  color: #a6adc8;
+  color: color-mix(in srgb, var(--foreground), transparent 30%);
 }
 
 .control-btn.settings:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: color-mix(in srgb, var(--background), var(--foreground) 10%);
+  color: var(--foreground);
 }
 
 .tab {
@@ -190,7 +188,7 @@
   padding: 0 16px;
   /* Wider tabs */
   background-color: transparent;
-  color: #6c7086;
+  color: color-mix(in srgb, var(--foreground), transparent 40%);
   font-size: 13px;
   /* Readable Font */
   font-weight: 500;
@@ -201,23 +199,28 @@
   border-radius: 8px 8px 0 0;
   /* Smooth Tab Corners */
   transition: all 0.2s;
-  min-width: 140px;
+  /* Responsive Tab Sizing */
+  min-width: 40px;
+  /* Even smaller min width */
   max-width: 220px;
+  flex: 1 1 auto;
+  /* Grow to fill, shrink if needed */
+  overflow: hidden;
 }
 
 .tab:hover {
-  background-color: #313244;
-  color: #fff;
+  background-color: color-mix(in srgb, var(--background), var(--foreground) 5%);
+  color: var(--foreground);
 }
 
 .tab.active {
-  background-color: #1e1e2e;
+  background-color: var(--background);
   /* Matches body */
-  color: #fff;
+  color: var(--foreground);
   font-weight: 600;
   height: 38px;
   /* Active overlaps border */
-  border: 1px solid #313244;
+  border: 1px solid color-mix(in srgb, var(--background), var(--foreground) 20%);
   border-bottom: none;
   /* Seamless look */
   z-index: 30;
@@ -236,6 +239,8 @@
   border-radius: 4px;
   display: flex;
   align-items: center;
+  /* Ensure close button doesn't shrink */
+  flex-shrink: 0;
 }
 
 .tab:hover .tab-close-btn {
@@ -243,13 +248,13 @@
 }
 
 .tab-close-btn:hover {
-  background-color: #45475a;
-  color: #f38ba8;
+  background-color: var(--color-black);
+  color: var(--color-red);
 }
 
 .new-tab-btn {
   padding: 8px;
-  color: #6c7086;
+  color: color-mix(in srgb, var(--foreground), transparent 40%);
   border-radius: 6px;
   cursor: pointer;
   display: flex;
@@ -261,16 +266,19 @@
 }
 
 .new-tab-btn:hover {
-  background-color: #313244;
-  color: #a6e3a1;
+  background-color: color-mix(in srgb, var(--background), var(--foreground) 10%);
+  color: var(--color-green);
 }
 
 /* 2. DRAG HANDLE (Middle) */
 .title-section-drag {
   flex-grow: 1;
+  /* Don't hog space aggressively if tabs need it */
   height: 100%;
-  min-width: 40px;
-  /* This creates the draggable area */
+  min-width: 20px;
+  /* Smaller minimum spacer */
+  flex-shrink: 1;
+  /* Allow spacer to shrink */
 }
 
 /* 3. WINDOW CONTROLS (Right) */
@@ -282,12 +290,16 @@
   padding-bottom: 6px;
   /* Center vertically in header */
   z-index: 50;
+  /* CRITICAL: Never shrink controls */
+  flex-shrink: 0;
+  margin-left: auto;
+  /* Push to right just in case */
 }
 
 .control-btn {
   background: transparent;
   border: none;
-  color: #6c7086;
+  color: color-mix(in srgb, var(--foreground), transparent 40%);
   cursor: pointer;
   width: 34px;
   height: 34px;
@@ -299,13 +311,13 @@
 }
 
 .control-btn:hover {
-  background-color: #313244;
-  color: #fff;
+  background-color: color-mix(in srgb, var(--background), var(--foreground) 10%);
+  color: var(--foreground);
 }
 
 .control-btn.close:hover {
-  background-color: #f38ba8;
-  color: #1e1e2e;
+  background-color: var(--color-red);
+  color: var(--background);
 }
 
 /* TERMINAL BODY */
@@ -328,7 +340,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: #45475a;
+  background-color: color-mix(in srgb, var(--background), var(--foreground) 20%);
   border-radius: 6px;
-  border: 3px solid #1e1e2e;
+  border: 3px solid var(--background);
 }

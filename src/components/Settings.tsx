@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Settings as SettingsIcon, Monitor, Palette, Server, Trash2, Plus, Terminal } from 'lucide-react';
-import { loadSSHProfiles, addSSHProfile, deleteSSHProfile } from '../lib/store';
+import { Settings as SettingsIcon, Monitor, Palette, Server, Trash2, Plus } from 'lucide-react';
+import { loadSSHProfiles, addSSHProfile, deleteSSHProfile, loadThemeId, saveThemeId } from '../lib/store';
 import { SSHProfile } from '../types';
+import { PRESET_THEMES } from '../config/themes';
 
 export const Settings = () => {
   const [sshProfiles, setSshProfiles] = useState<SSHProfile[]>([]);
   const [isAdding, setIsAdding] = useState(false);
+  const [currentThemeId, setCurrentThemeId] = useState<string>('catppuccin-mocha');
 
   // Form State
   const [name, setName] = useState('');
@@ -20,6 +22,9 @@ export const Settings = () => {
 
   useEffect(() => {
     refreshProfiles();
+    loadThemeId().then(id => {
+      if (id) setCurrentThemeId(id);
+    });
   }, []);
 
   const handleAddProfile = async () => {
@@ -47,6 +52,12 @@ export const Settings = () => {
     refreshProfiles();
   };
 
+  const handleThemeChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newId = e.target.value;
+    setCurrentThemeId(newId);
+    await saveThemeId(newId);
+  };
+
   const resetForm = () => {
     setName('');
     setHost('');
@@ -58,7 +69,7 @@ export const Settings = () => {
   return (
     <div style={{
       padding: '40px',
-      color: '#cdd6f4',
+      color: 'var(--foreground)',
       height: '100%',
       overflowY: 'auto',
       display: 'flex',
@@ -141,15 +152,25 @@ export const Settings = () => {
 
       <div className="settings-section">
         <h2><Palette size={18} /> Appearance</h2>
-        <p style={{ opacity: 0.6 }}>Theme selection coming soon...</p>
+        <div className="setting-item">
+          <label>Color Scheme</label>
+          <select className="settings-select" value={currentThemeId} onChange={handleThemeChange}>
+            {PRESET_THEMES.map(theme => (
+              <option key={theme.id} value={theme.id}>{theme.name}</option>
+            ))}
+          </select>
+        </div>
+        <div style={{ marginTop: '10px', fontSize: '12px', opacity: 0.6 }}>
+          Selected theme will be applied to all open terminals.
+        </div>
       </div>
 
       <style>{`
         .settings-section {
-          background: rgba(255, 255, 255, 0.05);
+          background: color-mix(in srgb, var(--background), var(--foreground) 5%);
           padding: 24px;
           border-radius: 12px;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          border: 1px solid color-mix(in srgb, var(--background), var(--foreground) 10%);
           margin-bottom: 20px;
         }
         .settings-section h2 {
@@ -158,7 +179,7 @@ export const Settings = () => {
           display: flex;
           align-items: center;
           gap: 10px;
-          color: #89b4fa;
+          color: var(--color-blue);
         }
         .setting-item {
           display: flex;
@@ -166,9 +187,9 @@ export const Settings = () => {
           gap: 8px;
         }
         .settings-select, input[type="text"], input[type="number"] {
-          background-color: #313244;
-          color: #cdd6f4;
-          border: 1px solid rgba(255, 255, 255, 0.1);
+          background-color: color-mix(in srgb, var(--background), var(--foreground) 10%);
+          color: var(--foreground);
+          border: 1px solid color-mix(in srgb, var(--background), var(--foreground) 10%);
           padding: 10px 12px;
           border-radius: 6px;
           font-family: inherit;
@@ -189,8 +210,12 @@ export const Settings = () => {
           padding-right: 40px;
           cursor: pointer;
         }
+        /* Note: SVG arrow color is hardcoded #cdd6f4 in data URI. 
+           To support fully dynamic arrow, we'd need an SVG component or mask.
+           For now, it's acceptable (bright text). */
+           
         .settings-select:focus, input:focus {
-          border-color: #89b4fa;
+          border-color: var(--color-blue);
         }
         
         /* SSH List */
@@ -205,10 +230,10 @@ export const Settings = () => {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            background: rgba(0,0,0,0.2);
+            background: color-mix(in srgb, var(--background), var(--foreground) 5%);
             padding: 12px 16px;
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid color-mix(in srgb, var(--background), var(--foreground) 5%);
         }
         .ssh-info {
             display: flex;
@@ -224,19 +249,19 @@ export const Settings = () => {
         .icon-btn {
             background: transparent;
             border: none;
-            color: #6c7086;
+            color: color-mix(in srgb, var(--foreground), transparent 40%);
             cursor: pointer;
             padding: 6px;
             border-radius: 4px;
             transition: all 0.2s;
         }
         .icon-btn:hover {
-            color: #cdd6f4;
-            background: rgba(255,255,255,0.1);
+            color: var(--foreground);
+            background: color-mix(in srgb, var(--background), var(--foreground) 10%);
         }
         .icon-btn.delete:hover {
-            color: #f38ba8;
-            background: rgba(243, 139, 168, 0.1);
+            color: var(--color-red);
+            background: color-mix(in srgb, var(--color-red), transparent 90%);
         }
 
         .btn-primary, .btn-secondary {
@@ -252,12 +277,12 @@ export const Settings = () => {
             transition: opacity 0.2s;
         }
         .btn-primary {
-            background: #89b4fa;
-            color: #1e1e2e;
+            background: var(--color-blue);
+            color: var(--background);
         }
         .btn-secondary {
-            background: rgba(255,255,255,0.1);
-            color: #cdd6f4;
+            background: color-mix(in srgb, var(--background), var(--foreground) 10%);
+            color: var(--foreground);
         }
         .btn-primary:hover, .btn-secondary:hover {
             opacity: 0.9;
@@ -265,10 +290,10 @@ export const Settings = () => {
 
         /* Form */
         .add-ssh-form {
-            background: rgba(0,0,0,0.2);
+            background: color-mix(in srgb, var(--background), var(--foreground) 5%);
             padding: 20px;
             border-radius: 8px;
-            border: 1px solid rgba(255,255,255,0.05);
+            border: 1px solid color-mix(in srgb, var(--background), var(--foreground) 5%);
         }
         .add-ssh-form h3 {
             font-size: 16px;
@@ -300,5 +325,7 @@ export const Settings = () => {
         }
       `}</style>
     </div>
+
+
   );
 };

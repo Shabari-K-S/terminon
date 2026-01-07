@@ -5,29 +5,42 @@ import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import '@xterm/xterm/css/xterm.css';
 
-const theme = {
-  background: '#1e1e2e',
-  foreground: '#cdd6f4',
-  cursor: '#f5e0dc',
-  selectionBackground: 'rgba(88, 91, 112, 0.3)',
-};
+import { PRESET_THEMES } from '../config/themes';
+import { loadThemeId } from '../lib/store';
 
-// Add 'visible' prop and optional command/args
+// Default fallback if loading fails
+const DEFAULT_THEME = PRESET_THEMES[0];
+
 export const TerminalPane = ({ id, visible, command, args, onExit }: { id: string, visible: boolean, command?: string, args?: string[], onExit?: () => void }) => {
   const terminalRef = useRef<HTMLDivElement>(null);
   const fitAddonRef = useRef<FitAddon | null>(null); // Store addon ref to call fit() later
 
+  // Helper to find theme by ID
+  const getTheme = (id: string | null) => PRESET_THEMES.find(t => t.id === id) || DEFAULT_THEME;
+
   useEffect(() => {
     if (!terminalRef.current) return;
 
+    // Initialize with default theme temporarily, will update async
     const term = new XTerm({
-      theme: theme,
+      theme: DEFAULT_THEME,
       fontFamily: '"TermFont", "JetBrains Mono", monospace',
       fontSize: 14,
       lineHeight: 1.2,
       cursorBlink: true,
       allowProposedApi: true,
       allowTransparency: false,
+    });
+
+    // Load saved theme and apply
+    loadThemeId().then(id => {
+      term.options.theme = getTheme(id);
+    });
+
+    // Listen for theme changes
+    const unlistenTheme = listen('theme-changed', (event: any) => {
+      const newThemeId = event.payload;
+      term.options.theme = getTheme(newThemeId);
     });
 
     const fitAddon = new FitAddon();
@@ -64,6 +77,7 @@ export const TerminalPane = ({ id, visible, command, args, onExit }: { id: strin
       term.dispose();
       unlistenData.then(f => f());
       unlistenExit.then(f => f());
+      unlistenTheme.then(f => f());
     };
   }, [id]);
 

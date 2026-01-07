@@ -12,17 +12,17 @@ Designed to be lightweight, incredibly fast, and aesthetically pleasing with a "
 * **🎨 Modern UI:** Sleek, borderless design with a custom title bar and glassmorphism accents.
 * **🔀 Multi-Tab & Split Support:** Manage multiple sessions effortlessly.
 * **📁 Smart Profile Selector:** Dropdown to easily switch between **Bash**, **WSL**, **PowerShell**, or **CMD** based on your OS.
-* **🌐 SSH Profile Manager:** Create, save, and launch SSH connections directly from the UI.
-* **⚙️ Settings Tab:** Dedicated configuration page to manage profiles and app preferences.
-* **🚪 Auto-Close:** Tabs automatically close when the shell process exits. Main window closes on last tab exit.
-* **🧩 Nerd Font Support:** Bundled JetBrains Mono Nerd Font for perfect icon rendering (Starship/Powerlevel10k ready).
-* **🛠️ Cross-Platform:** Runs natively on Linux, Windows, and macOS with OS-specific defaults.
+* **🏠 Welcome Hub:** A premium landing page that appears when all tabs are closed, providing quick actions for new sessions.
+* **🏠 Global Theming:** Choose from popular presets (Dracula, Nord, etc.) that apply instantly to the entire application UI.
+* **🌐 SSH Profile Manager:** Complete CRUD operations for SSH profiles with live UI updates and persistence.
+* **📏 Responsive Tabs:** Chrome-like tab behavior with equal width distribution and graceful shrinking.
+* **⚙️ Dynamic Settings:** Manage appearance and profiles through a dedicated, live-updating Settings tab.
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Frontend:** React 19, TypeScript, TailwindCSS (optional), Framer Motion.
+* **Frontend:** React 19, TypeScript, Vanilla CSS.
 * **Backend:** Rust, Tauri v2.
 * **Terminal Engine:** xterm.js + xterm-addon-fit + xterm-addon-web-links.
 * **Shell Interface:** portable-pty (async multi-threaded shell management).
@@ -65,12 +65,13 @@ Ensure you have the following installed:
 
 ### 1. Profiles & New Tabs
 * Click the **`+`** button to open a default terminal tab.
-* Click the **Chevron (⌄)** next to it to select a specific profile (e.g., WSL, Bash).
+* Click the **Chevron (⌄)** next to it to select a specific profile (e.g., WSL, Bash) or connect via SSH.
 * The app automatically detects your OS and offers relevant shells.
 
-### 2. Settings
+### 2. Settings & Themes
 * Click the **Gear Icon** in the title bar to open the **Settings Tab**.
-* Here you can configure startup behavior and appearance (more settings coming soon).
+* Switch between themes (Campbell, Dracula, Catppuccin, etc.) and they will apply instantly across the whole app.
+* Manage your SSH profiles with full CRUD support.
 
 ### 3. Font Issues?
 If you see "boxes" instead of icons in your prompt:
@@ -82,12 +83,7 @@ If you see "boxes" instead of icons in your prompt:
 
 ## 🔧 Configuration
 
-### Changing Colors
-
-The theme is designed for seamless integration. To change the background color, you must update it in **two places**:
-
-1. `src/App.css` -> `.app-container { background-color: #YOUR_COLOR; }`
-2. `src/components/Terminal.tsx` -> `const theme = { background: '#YOUR_COLOR', ... }`
+All configurations, including themes and SSH profiles, are now managed directly through the **Settings** UI and persisted automatically via Tauri's store plugin. No manual CSS or terminal code changes are required for styling.
 
 ---
 

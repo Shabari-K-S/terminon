@@ -39,3 +39,18 @@ export const deleteSSHProfile = async (id: string) => {
     const newProfiles = profiles.filter(p => p.id !== id);
     await saveSSHProfiles(newProfiles);
 };
+
+const THEME_KEY = 'current_theme';
+
+export const loadThemeId = async (): Promise<string | null> => {
+    const s = await getStore();
+    const val = await s.get<string>(THEME_KEY);
+    return val || null;
+};
+
+export const saveThemeId = async (themeId: string) => {
+    const s = await getStore();
+    await s.set(THEME_KEY, themeId);
+    await s.save();
+    await emit('theme-changed', themeId);
+};
