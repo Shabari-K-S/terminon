@@ -19,7 +19,7 @@ export const WelcomePage: React.FC<WelcomePageProps> = ({
                     <div className="welcome-logo">
                         <Terminal size={48} />
                     </div>
-                    <h1>Hyper-Term</h1>
+                    <h1>Terminon</h1>
                     <p>The modern, versatile terminal for your workflow.</p>
                 </div>
 

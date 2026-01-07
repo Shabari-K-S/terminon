@@ -1,5 +1,5 @@
 
-# 🚀 Hyper Term (Tauri + React)
+# 🚀 Terminon (Tauri + React)
 
 A modern, GPU-accelerated terminal emulator built with **Rust (Tauri)** and **React**.
 Designed to be lightweight, incredibly fast, and aesthetically pleasing with a "Ghostty-style" translucent UI.
@@ -44,8 +44,8 @@ Ensure you have the following installed:
 
 1.  **Clone the repository:**
     ```bash
-    git clone https://github.com/Shabari-K-S/hyper-term.git
-    cd hyper-term
+    git clone https://github.com/Shabari-K-S/terminon.git
+    cd terminon
     ```
 
 2.  **Install Frontend Dependencies:**
