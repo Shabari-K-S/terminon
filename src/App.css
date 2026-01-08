@@ -52,7 +52,7 @@
   /* CRITICAL: Allow this container to shrink below its content's intrinsic size */
   flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
+  overflow-x: clip;
 }
 
 /* Additions for Profiles & Settings */
